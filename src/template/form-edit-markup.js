@@ -16,17 +16,21 @@ function createPointDestinationListElement() {
     </datalist>`;
 }
 
-function createEventOfferElement(offers, checkedOffers) {
-  const offerItem = offers.map((offer) => `
-    <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offer.title}" ${checkedOffers.includes(offer.id) ? 'checked' : ''}>
-      <label class="event__offer-label" for="${offer.id}">
-        <span class="event__offer-title">${offer.title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`).join('');
-  return `<div class="event__available-offers">${offerItem}</div>`;
+function createOffersTemplate(pointOffers) {
+  let result = '';
+
+  pointOffers.forEach((offer, index) => {
+    result += `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index + 1}" type="checkbox" name="event-offer-luggage" checked>
+    <label class="event__offer-label" for="event-offer-luggage-${index + 1}">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </label>
+  </div>`;
+  });
+
+  return result;
 }
 
 function createPointPhotoElement(pictures) {
@@ -39,7 +43,8 @@ function createPointPhotoElement(pictures) {
 }
 
 function CreateFormEditMarkup({point, pointDestination, pointOffers}){
-  const { type, offers, dateFrom, dateTo, basePrice } = point;
+  const { type, dateFrom, dateTo, basePrice } = point;
+
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -89,23 +94,17 @@ function CreateFormEditMarkup({point, pointDestination, pointOffers}){
         <section class="event__details">
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-            ${createEventOfferElement(pointOffers.offers, offers)}
+            <div class="event__available-offers">
+              ${createOffersTemplate(pointOffers)}
+            </div>
+
           </section>
 
     <section class="event__details">
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${pointDestination.description}</p>
-
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
-          </div>
-        </div>
+          ${createPointPhotoElement(pointDestination.pictures)}
       </section>
     </section>
   </form>

@@ -13,7 +13,7 @@ export default class FormEditView {
   getTemplate() {
     return CreateFormEditMarkup({
       point: this.point,
-      pointDestination: this.pointDestination,
+      pointDestination: this.pointDestination[0],
       pointOffers: this.pointOffers
     });
   }

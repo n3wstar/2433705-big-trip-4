@@ -19,13 +19,13 @@ export default class BoardPresenter{
     render(this.sortComponent, this.container);
     render(this.eventListComponent, this.container);
     render (new FormEditView({
-      point: this.pointsModel.get()[0],
-      pointDestinations: this.destinationsModel.get(),
-      pointOffers: this.pointsModel.get()
+      point: this.pointsModel.getPoints()[0],
+      pointDestination: this.destinationsModel.getDestination(),
+      pointOffers: this.pointsModel.getPoints()
     }),
     this.eventListComponent.getElement()
     );
-    this.pointsModel.get().forEach((point) => {
+    this.pointsModel.getPoints().forEach((point) => {
       render(
         new PointView({
           point,
