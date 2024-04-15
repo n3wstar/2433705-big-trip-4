@@ -21,7 +21,7 @@ export default class BoardPresenter{
     render (new FormEditView({
       point: this.pointsModel.getPoints()[0],
       pointDestination: this.destinationsModel.getDestination(),
-      pointOffers: this.pointsModel.getPoints()
+      pointOffers: this.offersModel.getOffers()
     }),
     this.eventListComponent.getElement()
     );
