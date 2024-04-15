@@ -27,3 +27,5 @@ npm i eslint@8.28.0 -DE
 - babel-loader@9.1.0
 - css-loader@6.7.2
 - style-loader@3.3.1
+- css-loader@6.7.2
+- style-loader@3.3.1
