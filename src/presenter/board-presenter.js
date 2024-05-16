@@ -1,91 +1,74 @@
-import { replace } from '../framework/render.js';
+
 import {render} from '../render.js';
 import EventListView from '../view/event-list-view.js';
-import FormEditView from '../view/form-edit-view.js';
-import PointView from '../view/point-view.js';
 import SortView from '../view/sort-view.js';
+import WithoutPointsView from '../view/without-point-view.js';
+import PointPresenter from './point-presenter.js';
+import { updateItem } from '../utils.js';
 
 export default class BoardPresenter{
   #sortComponent = new SortView();
   #eventListComponent = new EventListView();
+  #withoutPointsComponent = new WithoutPointsView();
   #container = null;
   #destinationModel = null;
   #offersModel = null;
   #pointsModel = null;
+  #points = null;
+  #pointPresenters = new Map();
 
   constructor({container, destinationsModel, offersModel, pointsModel}){
     this.#container = container;
     this.#destinationModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#pointsModel = pointsModel;
+
+    this.#points = [...this.#pointsModel.getPoints()];
   }
 
   init(){
-    if (this.#pointsModel.getPoints().length === 0){
-      render(this.#eventListComponent, this.#container);
+
+    if (this.#points.length === 0){
+      render(this.#withoutPointsComponent, this.#container);
       return;
     }
     render(this.#sortComponent, this.#container);
     render(this.#eventListComponent, this.#container);
+    this.#renderPoints();
 
-    this.#pointsModel.getPoints().forEach((point) => {
-      this.#renderPoints(point);
-    });
   }
 
-  #renderPoints = (point) => {
-    const pointComponent = new PointView({
+  #renderPoints = () => {
+    this.#points.forEach((point) => {
+      this.#renderPoint(point);
+    });
+  };
+
+  #clearPoints = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  };
+
+  #renderPoint = (point) => {
+    const pointPresenter = new PointPresenter({
+      eventListContainer: this.#eventListComponent.element,
       point,
-      pointDestination: this.#destinationModel.getById(point.destination),
-      pointOffers: this.#offersModel.getOfferByType(point.type),
-      onEditClick: editPointClickHandler
+      destinationModel: this.#destinationModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#pointChangeHandler,
+      onModeChange: this.#modeChangeHandler
     });
+    pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
+  };
 
-    const pointEditComponent = new FormEditView({
-      point: this.#pointsModel.getPoints()[0],
-      pointDestination: this.#destinationModel.getDestination(),
-      pointOffers: this.#offersModel.getOffers(),
-      onResetClick: resetClickHandler,
-      onSubmitClick: pointSubmitHandler,
-      onRollUpClick: rollUpClickHandler
-    });
+  #pointChangeHandler = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
 
-    const replaceFormToPoint = () => {
-      replace(pointComponent, pointEditComponent);
-    };
-
-    const replacePointToForm = () => {
-      replace(pointEditComponent, pointComponent);
-    };
-
-    const escKeydownHandler = (evt) => {
-      if (evt.key === 'Escape'){
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeydownHandler);
-      }
-    };
-
-    function editPointClickHandler(){
-      replacePointToForm();
-      document.addEventListener('keydown', escKeydownHandler);
-    }
-
-    function resetClickHandler(){
-      replaceFormToPoint();
-      document.removeEventListener('keydown', escKeydownHandler);
-    }
-
-    function pointSubmitHandler(){
-      replaceFormToPoint();
-      document.removeEventListener('keydown', escKeydownHandler);
-    }
-
-    function rollUpClickHandler(){
-      replaceFormToPoint();
-      document.addEventListener('keydown', escKeydownHandler);
-    }
-
-    render(pointComponent, this.#eventListComponent.element);
+  #modeChangeHandler = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 }
+
