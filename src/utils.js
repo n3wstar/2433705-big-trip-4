@@ -53,6 +53,10 @@ function getDuration(dateFrom, dateTo) {
   return dayjs.duration(timeDiff).format('mm[M]');
 }
 
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
 export {getRandomNumber, getRandomValue, getDate, formatStringToDateTime, formatStringToShortDate,
-  formatStringToTime, getDuration
+  formatStringToTime, getDuration, updateItem
 };
