@@ -41,6 +41,10 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
 function isBigDifference(firstPoint, secondPoint) {
   return firstPoint.dateFrom !== secondPoint.dateFrom || firstPoint.price !== secondPoint.price || sortByTime(firstPoint, secondPoint) !== 0;
 }
