@@ -41,6 +41,24 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
+function sortByTime(firstPoint, secondPoint) {
+  const timeFrom = dayjs(firstPoint.dateTo).diff(dayjs(firstPoint.dateFrom));
+  const timeTo = dayjs(secondPoint.dateTo).diff(dayjs(secondPoint.dateFrom));
+
+  return timeFrom - timeTo;
+}
+
+function sortByPrice(firstPoint, secondPoint) {
+  return firstPoint.basePrice - secondPoint.basePrice;
+}
+
+function sortByDay(firstPoint, secondPoint) {
+  const timeA = dayjs(firstPoint.dateFrom);
+  const timeB = dayjs(secondPoint.dateFrom);
+
+  return timeA - timeB;
+}
+
 function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
