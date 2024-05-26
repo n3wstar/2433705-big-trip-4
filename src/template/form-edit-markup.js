@@ -16,21 +16,20 @@ function createPointDestinationListElement() {
     </datalist>`;
 }
 
-function createOffersTemplate(pointOffers) {
-  let result = '';
+function createOffersTemplate(offers, selectedOffers) {
+  const offerItems = offers.offers.map((offer) => {
+    const offerName = offer.title.replace(' ', '').toLowerCase();
+    return (`<div class="event__offer-selector">
+                <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${selectedOffers?.offers?.map((of) => of.id).includes(offer.id) ? 'checked' : ''}>
+                <label class="event__offer-label" for="${offer.id}">
+                    <span class="event__offer-title">${offer.title}</span>
+                    &plus;&euro;&nbsp;
+                    <span class="event__offer-price">${offer.price}</span>
+                </label>
+            </div>`);
+  }).join('');
 
-  pointOffers.forEach((offer, index) => {
-    result += `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index + 1}" type="checkbox" name="event-offer-luggage" checked>
-    <label class="event__offer-label" for="event-offer-luggage-${index + 1}">
-      <span class="event__offer-title">${offer.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
-    </label>
-  </div>`;
-  });
-
-  return result;
+  return `<div class="event__available-offers">${offerItems}</div>`;
 }
 
 function createPointPhotoElement(pictures) {
@@ -42,8 +41,10 @@ function createPointPhotoElement(pictures) {
     </div>`;
 }
 
-function CreateFormEditMarkup({point, pointDestination, pointOffers}){
-  const { type, dateFrom, dateTo, basePrice } = point;
+function CreateFormEditMarkup({state, pointDestination, pointOffers}){
+  const { point } = state;
+  const {id, basePrice, dateFrom, dateTo, offers, type} = point;
+  const currentOffers = pointOffers.find((offer) => offer.type === type);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -84,7 +85,7 @@ function CreateFormEditMarkup({point, pointDestination, pointOffers}){
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${basePrice}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -95,7 +96,7 @@ function CreateFormEditMarkup({point, pointDestination, pointOffers}){
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
-              ${createOffersTemplate(pointOffers)}
+              ${createOffersTemplate(currentOffers, offers)}
             </div>
 
           </section>
@@ -112,4 +113,3 @@ function CreateFormEditMarkup({point, pointDestination, pointOffers}){
 }
 
 export{CreateFormEditMarkup};
-
