@@ -1,9 +1,9 @@
 import { CreateFormEditMarkup } from '../template/form-edit-markup.js';
 import { EMPTY_POINT } from '../const.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 
-export default class FormEditView extends AbstractView {
+export default class FormEditView extends AbstractStatefulView {
   #point = null;
   #pointDestination = null;
   #pointOffers = null;
@@ -20,27 +20,87 @@ export default class FormEditView extends AbstractView {
     this.#onSubmitClick = onSubmitClick;
     this.#onRollUpClick = onRollUpClick;
 
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#resetButtonClickHandler);
-    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpClickHandler);
+    this._setState(FormEditView.parsePointToState({point}));
+    this._restoreHandlers();
+
   }
 
   get template() {
     return CreateFormEditMarkup({
-      point: this.#point,
+      state: this._state,
       pointDestination: this.#pointDestination[0],
       pointOffers: this.#pointOffers
     });
   }
 
+  _restoreHandlers(){
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpClickHandler);
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#resetButtonClickHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#changeTypeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#changePriceHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#changeOffersHandler);
+  }
+
+  #changeTypeHandler = (event) => {
+    event.preventDefault();
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        type: event.target.value,
+        offers: []
+      }
+    });
+  };
+
+  #changeDestinationHandler = (evt) => {
+    const selectedDestination = this.#pointDestination.find((destination) => destination.name === evt.target.value);
+    if (selectedDestination) {
+      this.updateElement({
+        point: {
+          ...this._state.point,
+          destination: selectedDestination.id,
+        },
+        destination: selectedDestination
+      });
+    }
+  };
+
+  #changePriceHandler = (evt) => {
+    const basePrice = evt.target.valueAsNumber;
+    if (!isNaN(basePrice)) {
+      this._setState({
+        point: {
+          ...this._state.point,
+          basePrice: basePrice
+        }
+      });
+    }
+  };
+
+  #changeOffersHandler = () => {
+    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    this._setState({
+      ...this._state,
+      offers: checkedOffers.map((offer) => offer.id)
+    });
+  };
+
+  static parsePointToState = ({point}) => ({ point });
+
+  static parseStateToPoint = (state) => state.point;
+
+  reset = (point) => this.updateElement({point});
+
   #resetButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onResetClick();
+    this.#onResetClick(FormEditView.parseStateToPoint(this._state));
   };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#onSubmitClick();
+    this.#onSubmitClick(FormEditView.parseStateToPoint(this._state));
   };
 
   #rollUpClickHandler = (evt) => {
