@@ -1,7 +1,7 @@
 import { CreateFormEditMarkup } from '../template/form-edit-markup.js';
 import { EMPTY_POINT } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-
+import DatePicker from '../date-picker.js';
 
 export default class FormEditView extends AbstractStatefulView {
   #point = null;
@@ -10,6 +10,8 @@ export default class FormEditView extends AbstractStatefulView {
   #onResetClick = null;
   #onSubmitClick = null;
   #onRollUpClick = null;
+  #pickDateFrom = null;
+  #pickDateTo = null;
 
   constructor({point = EMPTY_POINT, pointDestination, pointOffers, onResetClick, onSubmitClick, onRollUpClick }){
     super();
@@ -41,7 +43,54 @@ export default class FormEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#changePriceHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#changeOffersHandler);
+    this.#setDatePickers();
   }
+
+  #setDatePickers = () => {
+    this.#pickDateFrom = new DatePicker({
+      dateItem: this.element.querySelector('#event-start-time-1'),
+      defaultDate: this._state.dateFrom,
+      maxDate: this._state.dateTo,
+      onClose: this.#dateFromCloseHandler,
+    });
+
+    this.#pickDateTo = new DatePicker({
+      dateItem: this.element.querySelector('#event-end-time-1'),
+      defaultDate: this._state.dateTo,
+      minDate: this._state.dateFrom,
+      onClose: this.#dateToCloseHandler,
+    });
+  };
+
+  #dateFromCloseHandler = ([userDate]) => {
+    this._setState({
+      dateFrom: userDate
+    });
+
+    this.#pickDateTo.setMinDate(this._state.dateFrom);
+  };
+
+  #dateToCloseHandler = ([userDate]) => {
+    this._setState({
+      dateTo: userDate
+    });
+
+    this.#pickDateFrom.setMaxDate(this._state.dateTo);
+  };
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#pickDateFrom) {
+      this.#pickDateFrom.destroy();
+      this.#pickDateFrom = null;
+    }
+
+    if (this.#pickDateTo) {
+      this.#pickDateTo.destroy();
+      this.#pickDateTo = null;
+    }
+  };
 
   #changeTypeHandler = (event) => {
     event.preventDefault();
