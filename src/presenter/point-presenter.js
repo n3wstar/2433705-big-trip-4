@@ -2,6 +2,8 @@ import { replace, render, remove } from '../framework/render.js';
 import PointView from '../view/point-view.js';
 import FormEditView from '../view/form-edit-view.js';
 import { Mode } from '../const.js';
+import { UserAction, UpdateType } from '../const.js';
+import { isBigDifference } from '../utils.js';
 
 export default class PointPresenter {
   #pointComponent = null;
@@ -99,14 +101,21 @@ export default class PointPresenter {
   };
 
   #resetClickHandler = () => {
-    this.#pointEditComponent.reset(this.#point);
-    this.#replaceFormToPoint();
-    document.removeEventListener('keydown', this.#escKeydownHandler);
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      this.#point
+    );
   };
 
-  #pointSubmitHandler = () => {
+  #pointSubmitHandler = (update) => {
+    const isMinorUpdate = isBigDifference(update, this.#point);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
-    document.removeEventListener('keydown', this.#escKeydownHandler);
   };
 
   #rollUpClickHandler = () => {
@@ -115,9 +124,12 @@ export default class PointPresenter {
   };
 
   #favoriteClickHandler = () => {
-    this.#handleDataChange({...this.#point,
-      isFavorite: !this.#point.isFavorite
-    });
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point,
+        isFavorite: !this.#point.isFavorite
+      });
   };
 }
 
