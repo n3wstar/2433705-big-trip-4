@@ -16,6 +16,7 @@ const filterElement = tripInfoElement.querySelector('.trip-controls__filters');
 const mainElement = bodyElement.querySelector('.page-main');
 const eventListElement = mainElement.querySelector('.trip-events');
 
+
 const AUTHORIZATION = 'Basic hk539hbGLpes0Ft';
 const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
 

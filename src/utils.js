@@ -41,6 +41,10 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
+function isBigDifference(firstPoint, secondPoint) {
+  return firstPoint.dateFrom !== secondPoint.dateFrom || firstPoint.price !== secondPoint.price || sortByTime(firstPoint, secondPoint) !== 0;
+}
+
 function sortByTime(firstPoint, secondPoint) {
   const timeFrom = dayjs(firstPoint.dateTo).diff(dayjs(firstPoint.dateFrom));
   const timeTo = dayjs(secondPoint.dateTo).diff(dayjs(secondPoint.dateFrom));
@@ -57,6 +61,18 @@ function sortByDay(firstPoint, secondPoint) {
   const timeB = dayjs(secondPoint.dateFrom);
 
   return timeA - timeB;
+}
+
+function isPointPast(point) {
+  return dayjs().isAfter(point.dateTo);
+}
+
+function isPointPresent(point) {
+  return dayjs().isBefore(point.dateTo) && dayjs().isAfter(point.dateFrom);
+}
+
+function isPointFuture(point) {
+  return dayjs().isBefore(point.dateFrom);
 }
 
 function updateItem(items, update) {
