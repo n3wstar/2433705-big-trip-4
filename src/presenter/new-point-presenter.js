@@ -1,4 +1,4 @@
-import {remove, render } from '../framework/render';
+import {remove, render, RenderPosition } from '../framework/render';
 import { UpdateType, UserAction } from '../const';
 import FormEditView from '../view/form-edit-view';
 export default class NewPointPresenter {
@@ -29,7 +29,7 @@ export default class NewPointPresenter {
       onFormSubmit: this.#formSubmitHandler,
       onCancelFormClick: this.#cancelClickHandler
     });
-    render(this.#editFormComponent, this.#container.element);
+    render(this.#editFormComponent, this.#container.element, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 

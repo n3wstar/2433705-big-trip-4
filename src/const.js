@@ -1,6 +1,6 @@
 import { isPointFuture, isPointPresent, isPointPast } from './utils.js';
 
-const DEFAULT_TYPE = 'flight';
+const DEFAULT_TYPE = 'Flight';
 
 const EMPTY_POINT = {
   basePrice: 0,

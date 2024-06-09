@@ -7,7 +7,7 @@ import PointPresenter from './point-presenter.js';
 import { SortType } from '../const.js';
 import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
 import { UpdateType, UserAction } from '../const.js';
-import { FilterOptions } from '../const.js';
+import { FilterOptions, FilterTypes } from '../const.js';
 import NewPointPresenter from './new-point-presenter.js';
 
 export default class BoardPresenter{
@@ -22,7 +22,7 @@ export default class BoardPresenter{
   #newPointPresenter = null;
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
-  #filterType = FilterOptions.EVERYTHING;
+  #filterType = FilterTypes.EVERYTHING;
 
   constructor({container, destinationsModel, offersModel, pointsModel, filtersModel, onNewPointDestroy}){
     this.#container = container;
@@ -63,7 +63,7 @@ export default class BoardPresenter{
 
   createPoint() {
     this.#currentSortType = SortType.DAY;
-    this.#filtersModel.setFilter(UpdateType.MAJOR, FilterOptions.EVERYTHING);
+    this.#filtersModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
     this.#newPointPresenter.init();
   }
 
