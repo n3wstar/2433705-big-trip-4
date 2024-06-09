@@ -12,6 +12,7 @@ const EMPTY_POINT = {
   type: DEFAULT_TYPE
 };
 
+
 const TYPES = [
   'taxi',
   'bus',
