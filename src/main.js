@@ -22,13 +22,10 @@ const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
 const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
 
 const destinationsModel = new DestinationsModel(pointsApiService);
-console.log('DestinationsModel created:', destinationsModel);
 
 const offersModel = new OffersModel(pointsApiService);
-console.log('OffersModel created:', offersModel);
 
 const pointsModel = new PointsModel({apiService: pointsApiService, destinationsModel, offersModel});
-console.log('PointsModel created:', pointsModel);
 
 const filtersModel = new FiltersModel();
 
@@ -51,8 +48,5 @@ render(new TripInfoView(), tripInfoElement, RenderPosition.AFTERBEGIN);
 
 filterPresenter.init();
 boardPresenter.init();
-pointsModel.init().catch((error) => {
-  console.error('Failed to initialize points model:', error);
-});
-
+pointsModel.init();
 
