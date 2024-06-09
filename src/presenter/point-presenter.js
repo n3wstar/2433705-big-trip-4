@@ -33,15 +33,15 @@ export default class PointPresenter {
     this.#pointComponent = new PointView({
       point: this.#point,
       pointDestination: this.#destinationModel.getById(point.destination),
-      pointOffers: this.#offersModel.getOfferByType(point.type),
+      pointOffers: this.#offersModel.getByType(point.type),
       onEditClick: this.#editPointClickHandler,
       onFavoriteClick: this.#favoriteClickHandler
     });
 
     this.#pointEditComponent = new FormEditView({
       point: this.#point,
-      pointDestination: this.#destinationModel.getDestination(),
-      pointOffers: this.#offersModel.getOffers(),
+      pointDestination: this.#destinationModel.destinations,
+      pointOffers: this.#offersModel.offers,
       onResetClick: this.#resetClickHandler,
       onSubmitClick: this.#pointSubmitHandler,
       onRollUpClick: this.#rollUpClickHandler
@@ -131,32 +131,5 @@ export default class PointPresenter {
         isFavorite: !this.#point.isFavorite
       });
   };
-
-  setSaving() {
-    if (this.#mode === Mode.EDIT) {
-      this.#pointEditComponent.updateElement({
-        isActive: false,
-        isSaving: true
-      });
-    }
-  }
-
-  setDeleting() {
-    this.#pointEditComponent.updateElement({
-      isActive: false,
-      isDeleting: true
-    });
-  }
-
-  setAborting() {
-    const resetFormState = () => {
-      this.#pointEditComponent.updateElement({
-        isActive: true,
-        isSaving: false,
-        isDeleting: false
-      });
-    };
-    this.#pointEditComponent.shake(resetFormState);
-  }
 }
 
