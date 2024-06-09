@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DURATION } from './mock/consts.js';
+
 import { MSEC_IN_DAY, MSEC_IN_HOUR } from './const.js';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
@@ -13,22 +13,6 @@ function getRandomValue(items){
 
 }
 
-let date = dayjs().subtract(getRandomNumber(0, DURATION.DAY), 'day').toDate();
-
-function getDate({next}){
-  const minDiff = getRandomNumber(0, DURATION.MINUTE);
-  const hourDiff = getRandomNumber(0, DURATION.HOUR);
-  const dayDiff = getRandomNumber(0, DURATION.DAY);
-  if(next){
-    date = dayjs(date)
-      .add(minDiff, 'minute')
-      .add(hourDiff, 'hour')
-      .add(dayDiff, 'day')
-      .toDate();
-  }
-
-  return date;
-}
 
 function formatStringToDateTime(dateTime){
   return dayjs(dateTime).format('DD/MM/YY HH:mm');
@@ -91,6 +75,6 @@ function isPointFuture(point) {
   return dayjs().isBefore(point.dateFrom);
 }
 
-export {getRandomNumber, getRandomValue, getDate, formatStringToDateTime, formatStringToShortDate,
+export {getRandomNumber, getRandomValue, formatStringToDateTime, formatStringToShortDate,
   formatStringToTime, getDuration, updateItem, sortByDay, sortByPrice, sortByTime, isPointFuture, isPointPast, isPointPresent, isBigDifference
 };

@@ -1,26 +1,23 @@
-import { TYPES, CITIES } from '../mock/consts.js';
+import { TYPES } from '../const.js';
 import { formatStringToDateTime } from '../utils.js';
 
-function createPointTypesListElement(currentType) {
+function createPointTypesListElement(currentType, id, isDisabled) {
   return TYPES.map((type) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+      <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}${isDisabled ? 'disabled' : ''}>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}">${type}</label>
     </div>`).join('');
 }
 
-function createPointDestinationListElement() {
-  return `
-    <datalist id="destination-list-1">
-      ${CITIES.map((city) => `<option value="${city}"></option>`).join('')}
-    </datalist>`;
+function createPointDestinationListElement(destinations) {
+  return ( `${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')} `);
 }
 
-function createOffersTemplate(offers, selectedOffers) {
+function createOffersTemplate(offers, selectedOffers, isDisabled) {
   const offerItems = offers.offers.map((offer) => {
     const offerName = offer.title.replace(' ', '').toLowerCase();
     return (`<div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${selectedOffers?.offers?.map((of) => of.id).includes(offer.id) ? 'checked' : ''}>
+                <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${selectedOffers?.offers?.map((of) => of.id).includes(offer.id) ? 'checked' : ''} ${isDisabled ? '' : 'disabled'}>
                 <label class="event__offer-label" for="${offer.id}">
                     <span class="event__offer-title">${offer.title}</span>
                     &plus;&euro;&nbsp;
@@ -32,56 +29,70 @@ function createOffersTemplate(offers, selectedOffers) {
   return `<div class="event__available-offers">${offerItems}</div>`;
 }
 
-function createPointPhotoElement(pictures) {
-  return `
-    <div class="event__photos-container">
+function createPointPhotosTemplate(destination) {
+  return (
+    `<div class="event__photos-container">
       <div class="event__photos-tape">
-        ${pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')}
+        ${destination.pictures.map((picture) =>
+      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')}
       </div>
-    </div>`;
+    </div>`
+  );
+}
+
+function createDestinationTemplate( destination ) {
+  return destination.description.length && destination.pictures.length ? `<section class="event__section  event__section--destination" >
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    ${destination.description.length ? `<p class="event__destination-description">${destination.description}</p>` : ''}
+    ${destination.pictures.length ? createPointPhotosTemplate(destination) : ''}
+  </section>` : '';
 }
 
 function CreateFormEditMarkup({state, pointDestination, pointOffers}){
-  const { point } = state;
+  const { point, isDisabled } = state;
   const {id, basePrice, dateFrom, dateTo, offers, type} = point;
   const currentOffers = pointOffers.find((offer) => offer.type === type);
+  const currentDestination = pointDestination.find((destination) => destination.id === point.destination);
+  const destinationName = (currentDestination) ? currentDestination.name : '';
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
-        <label class="event__type  event__type-btn" for="event-type-toggle-1">
+        <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
           <span class="visually-hidden">Choose event type</span>
           <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
-        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-              ${createPointTypesListElement(type)}
+              ${createPointTypesListElement(type, id, isDisabled)}
           </fieldset>
         </div>
       </div>
 
       <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-1">
-          ${type}
+        <label class="event__label  event__type-output" for="event-destination-${id}">
+        ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1">
-        ${createPointDestinationListElement()}
+        <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destinationName}" list="destination-list-${id}${isDisabled ? 'disabled' : ''}>
+        <datalist id="destination-list-${id}"/>
+        ${createPointDestinationListElement(pointDestination)}
+          </datalist>
       </div>
 
       <div class="event__field-group  event__field-group--time">
-        <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatStringToDateTime(dateFrom)}">
+        <label class="visually-hidden" for="event-start-time-${id}">From</label>
+        <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${formatStringToDateTime(dateFrom)}">
         &mdash;
-        <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatStringToDateTime(dateTo)}">
+        <label class="visually-hidden" for="event-end-time-${id}">To</label>
+        <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${formatStringToDateTime(dateTo)}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
-        <label class="event__label" for="event-price-1">
+        <label class="event__label" for="event-price-${id}">
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
@@ -96,20 +107,16 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers}){
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
-              ${createOffersTemplate(currentOffers, offers)}
+              ${createOffersTemplate(currentOffers, offers, isDisabled)}
             </div>
-
           </section>
 
-    <section class="event__details">
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${pointDestination.description}</p>
-          ${createPointPhotoElement(pointDestination.pictures)}
-      </section>
-    </section>
-  </form>
-</li>`;
+          ${currentDestination ? `<section class="event__section  event__section--destination">
+            ${createDestinationTemplate(currentDestination)}
+          </section>` : ''}
+        </section>
+      </form>
+    </li>`;
 }
 
 export{CreateFormEditMarkup};
