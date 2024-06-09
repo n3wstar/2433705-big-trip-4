@@ -1,15 +1,21 @@
-export default class OffersModel{
+export default class OffersModel {
+  #apiService = null;
+  #offers = null;
 
-  constructor(service){
-    this.service = service;
-    this.offers = this.service.getOffers();
+  constructor(apiService) {
+    this.#apiService = apiService;
   }
 
-  getOffers(){
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
-  getOfferByType(type){
-    return this.offers.find((offer) => offer.type === type);
+  async init() {
+    this.#offers = await this.#apiService.offers;
+    return this.#offers;
+  }
+
+  getByType(type) {
+    return this.#offers.find((offer) => offer.type === type);
   }
 }
