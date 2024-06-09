@@ -2,12 +2,12 @@
 import TripInfoView from './view/trip-info-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import { render, RenderPosition } from './render.js';
-import MockService from './service/mock-service.js';
 import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
 import PointsModel from './model/points-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import FiltersModel from './model/filter-model.js';
+import PointsApiService from './service/points-api-service.js';
 
 const bodyElement = document.querySelector('body');
 const headerElement = bodyElement.querySelector('.page-header');
@@ -16,11 +16,20 @@ const filterElement = tripInfoElement.querySelector('.trip-controls__filters');
 const mainElement = bodyElement.querySelector('.page-main');
 const eventListElement = mainElement.querySelector('.trip-events');
 
+const AUTHORIZATION = 'Basic hk539hbGLpes0Ft';
+const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
 
-const mockService = new MockService();
-const destinationsModel = new DestinationsModel(mockService);
-const offersModel = new OffersModel(mockService);
-const pointsModel = new PointsModel(mockService);
+const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
+
+const destinationsModel = new DestinationsModel(pointsApiService);
+console.log('DestinationsModel created:', destinationsModel);
+
+const offersModel = new OffersModel(pointsApiService);
+console.log('OffersModel created:', offersModel);
+
+const pointsModel = new PointsModel({apiService: pointsApiService, destinationsModel, offersModel});
+console.log('PointsModel created:', pointsModel);
+
 const filtersModel = new FiltersModel();
 
 
@@ -42,5 +51,8 @@ render(new TripInfoView(), tripInfoElement, RenderPosition.AFTERBEGIN);
 
 filterPresenter.init();
 boardPresenter.init();
+pointsModel.init().catch((error) => {
+  console.error('Failed to initialize points model:', error);
+});
 
 

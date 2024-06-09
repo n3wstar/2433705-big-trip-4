@@ -136,11 +136,8 @@ export default class FormEditView extends AbstractStatefulView {
     });
   };
 
-  static parsePointToState = ({
-    point,
-    isDisabled = false,
-    isSaving = false,
-    isDeleting = false}) => ({ point, isDisabled, isSaving, isDeleting });
+  static parsePointToState = ({point}) => ({ point});
+
 
   static parseStateToPoint = (state) => state.point;
 

@@ -111,7 +111,7 @@ export default class BoardPresenter{
     this.#pointPresenters.set(point.id, pointPresenter);
   };
 
-  #userActionHandler = async (actionType, updateType, update) =>{
+  #userActionHandler = (actionType, updateType, update) =>{
     switch(actionType){
       case UserAction.UPDATE_POINT:
         this.#pointsModel.update(updateType, update);
