@@ -8,11 +8,12 @@ import { SortType } from '../const.js';
 import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
 import { UpdateType, UserAction } from '../const.js';
 import { FilterOptions } from '../const.js';
+import { RenderPosition } from '../render.js';
 
 export default class BoardPresenter{
   #sortComponent = null;
   #eventListComponent = new EventListView();
-  #withoutPointsComponent = new WithoutPointsView();
+  #withoutPointsComponent = null;
   #container = null;
   #destinationModel = null;
   #offersModel = null;
@@ -20,6 +21,10 @@ export default class BoardPresenter{
   #filtersModel = null;
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
+  #filterType = FilterOptions.EVERYTHING;
+
+  #isLoading = true;
+  #isLoadingError = false;
 
   constructor({container, destinationsModel, offersModel, pointsModel, filtersModel}){
     this.#container = container;
@@ -33,9 +38,9 @@ export default class BoardPresenter{
   }
 
   get points() {
-    const filterType = this.#filtersModel.filter;
+    this.#filterType = this.#filtersModel.filter;
     const points = this.#pointsModel.points;
-    const filteredPoints = FilterOptions[filterType](points);
+    const filteredPoints = FilterOptions[this.#filterType](points);
     const sortedPoints = [...filteredPoints];
     switch (this.#currentSortType) {
       case SortType.DAY:
@@ -56,8 +61,23 @@ export default class BoardPresenter{
   }
 
   #renderBoard = () => {
+    if (this.#withoutPointsComponent) {
+      remove(this.#withoutPointsComponent);
+      this.#withoutPointsComponent = null;
+    }
+
+    if (this.#isLoading) {
+      this.#renderWithoutPointsView({isLoading: true});
+      return;
+    }
+
+    if (this.#isLoadingError) {
+      this.#renderWithoutPointsView({isLoadingError: true});
+      return;
+    }
+
     if (this.points.length === 0) {
-      render(this.#withoutPointsComponent, this.#container);
+      this.#renderWithoutPointsView();
       return;
     }
 
@@ -88,6 +108,7 @@ export default class BoardPresenter{
   #clearPoints = ({resetSortType = false} = {}) => {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+    remove(this.#sortComponent);
 
     if (this.#withoutPointsComponent) {
       remove(this.#withoutPointsComponent);
@@ -109,6 +130,16 @@ export default class BoardPresenter{
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
+  };
+
+  #renderWithoutPointsView = ({isLoading = false, isLoadingError = false} = {}) => {
+    this.#withoutPointsComponent = new WithoutPointsView({
+      filterType: this.#filterType,
+      isLoading,
+      isLoadingError
+    });
+
+    render(this.#withoutPointsComponent, this.#container, RenderPosition.AFTERBEGIN);
   };
 
   #userActionHandler = (actionType, updateType, update) =>{
@@ -154,6 +185,8 @@ export default class BoardPresenter{
         this.#renderBoard();
         break;
       case UpdateType.INIT:
+        this.#isLoadingError = data.isError;
+        this.#isLoading = false;
         this.#renderBoard();
         break;
     }
