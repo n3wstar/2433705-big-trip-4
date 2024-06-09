@@ -8,6 +8,7 @@ import { SortType } from '../const.js';
 import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
 import { UpdateType, UserAction } from '../const.js';
 import { FilterOptions } from '../const.js';
+import NewPointPresenter from './new-point-presenter.js';
 
 export default class BoardPresenter{
   #sortComponent = null;
@@ -18,24 +19,33 @@ export default class BoardPresenter{
   #offersModel = null;
   #pointsModel = null;
   #filtersModel = null;
+  #newPointPresenter = null;
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
+  #filterType = FilterOptions.EVERYTHING;
 
-  constructor({container, destinationsModel, offersModel, pointsModel, filtersModel}){
+  constructor({container, destinationsModel, offersModel, pointsModel, filtersModel, onNewPointDestroy}){
     this.#container = container;
     this.#destinationModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
+    this.#newPointPresenter = new NewPointPresenter({
+      container: this.#eventListComponent,
+      destinationsModel: this.#destinationModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#userActionHandler,
+      onDestroy: onNewPointDestroy
+    });
 
     this.#pointsModel.addObserver(this.#modelEventHandler);
     this.#filtersModel.addObserver(this.#modelEventHandler);
   }
 
   get points() {
-    const filterType = this.#filtersModel.filter;
+    this.#filterType = this.#filtersModel.filter;
     const points = this.#pointsModel.points;
-    const filteredPoints = FilterOptions[filterType](points);
+    const filteredPoints = FilterOptions[this.#filterType](points);
     const sortedPoints = [...filteredPoints];
     switch (this.#currentSortType) {
       case SortType.DAY:
@@ -49,6 +59,12 @@ export default class BoardPresenter{
         break;
     }
     return sortedPoints;
+  }
+
+  createPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filtersModel.setFilter(UpdateType.MAJOR, FilterOptions.EVERYTHING);
+    this.#newPointPresenter.init();
   }
 
   init(){
@@ -86,6 +102,7 @@ export default class BoardPresenter{
   };
 
   #clearPoints = ({resetSortType = false} = {}) => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 

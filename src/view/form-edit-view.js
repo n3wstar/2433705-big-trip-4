@@ -12,12 +12,14 @@ export default class FormEditView extends AbstractStatefulView {
   #onRollUpClick = null;
   #pickDateFrom = null;
   #pickDateTo = null;
+  #isCreating = null;
 
-  constructor({point = EMPTY_POINT, pointDestination, pointOffers, onResetClick, onSubmitClick, onRollUpClick }){
+  constructor({point = EMPTY_POINT, pointDestination, pointOffers, isCreating = false, onResetClick, onSubmitClick, onRollUpClick }){
     super();
     this.#point = point;
     this.#pointDestination = pointDestination;
     this.#pointOffers = pointOffers;
+    this.#isCreating = isCreating;
     this.#onResetClick = onResetClick;
     this.#onSubmitClick = onSubmitClick;
     this.#onRollUpClick = onRollUpClick;
@@ -30,32 +32,35 @@ export default class FormEditView extends AbstractStatefulView {
   get template() {
     return CreateFormEditMarkup({
       state: this._state,
-      pointDestination: this.#pointDestination[0],
+      pointDestination: this.#pointDestination,
       pointOffers: this.#pointOffers
     });
   }
 
   _restoreHandlers(){
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpClickHandler);
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#resetButtonClickHandler);
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#changeTypeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#changePriceHandler);
-    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#changeOffersHandler);
-    this.#setDatePickers();
+    if (!this.#isCreating){
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpClickHandler);
+      this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#resetButtonClickHandler);
+      this.element.querySelector('.event__type-group').addEventListener('change', this.#changeTypeHandler);
+      this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
+      this.element.querySelector('.event__input--price').addEventListener('change', this.#changePriceHandler);
+      this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#changeOffersHandler);
+      this.#setDatePickers();
+    }
   }
 
   #setDatePickers = () => {
+    const id = this.#point.id;
     this.#pickDateFrom = new DatePicker({
-      dateItem: this.element.querySelector('#event-start-time-1'),
+      dateItem: this.element.querySelector(`#event-start-time-${id}`),
       defaultDate: this._state.dateFrom,
       maxDate: this._state.dateTo,
       onClose: this.#dateFromCloseHandler,
     });
 
     this.#pickDateTo = new DatePicker({
-      dateItem: this.element.querySelector('#event-end-time-1'),
+      dateItem: this.element.querySelector(`#event-end-time-${id}`),
       defaultDate: this._state.dateTo,
       minDate: this._state.dateFrom,
       onClose: this.#dateToCloseHandler,

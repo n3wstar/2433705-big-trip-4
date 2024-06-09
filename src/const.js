@@ -47,6 +47,13 @@ export const FilterOptions = {
   [FilterTypes.FUTURE]: (points) => points.filter((point) => isPointFuture(point))
 };
 
+export const EmptyPointsMessage = {
+  [FilterTypes.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterTypes.FUTURE]: 'There are no future events now',
+  [FilterTypes.PRESENT]: 'There are no present events now',
+  [FilterTypes.PAST]: 'There are no past events now'
+};
+
 const UserAction = {
   UPDATE_POINT:'UPDATE_POINT',
   DELETE_POINT: 'DELETE_POINT',
