@@ -12,6 +12,18 @@ const EMPTY_POINT = {
   type: DEFAULT_TYPE
 };
 
+const TYPES = [
+  'taxi',
+  'bus',
+  'train',
+  'ship',
+  'drive',
+  'flight',
+  'check-in',
+  'sightseeing',
+  'restaurant'
+];
+
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
@@ -69,4 +81,4 @@ const HOUR_IN_DAY = 24;
 const MSEC_IN_HOUR = MIN_IN_HOUR * SEC_IN_MIN * MSEC_IN_SEC;
 const MSEC_IN_DAY = HOUR_IN_DAY * MSEC_IN_HOUR;
 
-export {EMPTY_POINT, MSEC_IN_DAY, MSEC_IN_HOUR, Mode, SortType, EnabledSortType, UserAction, UpdateType};
+export {EMPTY_POINT, MSEC_IN_DAY, MSEC_IN_HOUR, Mode, SortType, EnabledSortType, UserAction, UpdateType, TYPES};
