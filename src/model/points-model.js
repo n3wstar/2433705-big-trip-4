@@ -11,7 +11,6 @@ export default class PointsModel extends Observable {
 
   constructor({apiService, destinationsModel, offersModel}){
     super();
-    console.log('PointsModel constructor:', { apiService, destinationsModel, offersModel });
     this.#apiService = apiService;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
@@ -27,7 +26,6 @@ export default class PointsModel extends Observable {
       this.#points = points.map(adaptToClient);
       this._notify(UpdateType.INIT, {});
     } catch (err) {
-      console.error('Failed to initialize points:', err);
       this.#points = [];
       this._notify(UpdateType.INIT, {isError: true});
     }
