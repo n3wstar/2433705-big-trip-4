@@ -10,6 +10,7 @@ import { UpdateType, UserAction } from '../const.js';
 import { FilterOptions } from '../const.js';
 import { RenderPosition } from '../render.js';
 
+
 export default class BoardPresenter{
   #sortComponent = null;
   #eventListComponent = new EventListView();
@@ -19,6 +20,7 @@ export default class BoardPresenter{
   #offersModel = null;
   #pointsModel = null;
   #filtersModel = null;
+  #newPointPresenter = null;
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
   #filterType = FilterOptions.EVERYTHING;
@@ -26,12 +28,20 @@ export default class BoardPresenter{
   #isLoading = true;
   #isLoadingError = false;
 
-  constructor({container, destinationsModel, offersModel, pointsModel, filtersModel}){
+
+  constructor({container, destinationsModel, offersModel, pointsModel, filtersModel, onNewPointDestroy}){
     this.#container = container;
     this.#destinationModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
+    this.#newPointPresenter = new NewPointPresenter({
+      container: this.#eventListComponent,
+      destinationsModel: this.#destinationModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#userActionHandler,
+      onDestroy: onNewPointDestroy
+    });
 
     this.#pointsModel.addObserver(this.#modelEventHandler);
     this.#filtersModel.addObserver(this.#modelEventHandler);
@@ -54,6 +64,12 @@ export default class BoardPresenter{
         break;
     }
     return sortedPoints;
+  }
+
+  createPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filtersModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
+    this.#newPointPresenter.init();
   }
 
   init(){
@@ -106,6 +122,7 @@ export default class BoardPresenter{
   };
 
   #clearPoints = ({resetSortType = false} = {}) => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 

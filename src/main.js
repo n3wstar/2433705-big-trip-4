@@ -9,6 +9,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import FiltersModel from './model/filter-model.js';
 import PointsApiService from './service/points-api-service.js';
 
+
 const bodyElement = document.querySelector('body');
 const headerElement = bodyElement.querySelector('.page-header');
 const tripInfoElement = headerElement.querySelector('.trip-main');
@@ -36,7 +37,8 @@ const boardPresenter = new BoardPresenter({
   destinationsModel,
   offersModel,
   pointsModel,
-  filtersModel
+  filtersModel,
+  onNewPointDestroy: newPointFormCloseHandler
 });
 
 const filterPresenter = new FilterPresenter({
@@ -45,7 +47,24 @@ const filterPresenter = new FilterPresenter({
   pointModel: pointsModel
 });
 
+const newPointComponent = new NewPointButtonView({
+  onClick: newPointClickHandler
+});
+
+function newPointFormCloseHandler() {
+  newPointComponent.element.disabled = false;
+}
+
+function newPointClickHandler() {
+  boardPresenter.createPoint();
+  newPointComponent.element.disabled = true;
+}
+
+render(newPointComponent, tripInfoElement, RenderPosition.BEFOREEND);
+
+
 render(new TripInfoView(), tripInfoElement, RenderPosition.AFTERBEGIN);
+
 
 filterPresenter.init();
 boardPresenter.init();
