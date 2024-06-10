@@ -1,4 +1,4 @@
-import { TYPES } from '../mock/consts.js';
+import { TYPES } from '../const.js';
 import { formatStringToDateTime } from '../utils.js';
 
 function createPointTypesListElement(currentType, id, isDisabled) {

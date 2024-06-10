@@ -8,12 +8,14 @@ import { SortType } from '../const.js';
 import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
 import { UpdateType, UserAction } from '../const.js';
 import { FilterOptions, FilterTypes } from '../const.js';
+import { RenderPosition } from '../render.js';
 import NewPointPresenter from './new-point-presenter.js';
+
 
 export default class BoardPresenter{
   #sortComponent = null;
   #eventListComponent = new EventListView();
-  #withoutPointsComponent = new WithoutPointsView();
+  #withoutPointsComponent = null;
   #container = null;
   #destinationModel = null;
   #offersModel = null;
@@ -23,6 +25,10 @@ export default class BoardPresenter{
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
   #filterType = FilterTypes.EVERYTHING;
+
+  #isLoading = true;
+  #isLoadingError = false;
+
 
   constructor({container, destinationsModel, offersModel, pointsModel, filtersModel, onNewPointDestroy}){
     this.#container = container;
@@ -72,8 +78,23 @@ export default class BoardPresenter{
   }
 
   #renderBoard = () => {
+    if (this.#withoutPointsComponent) {
+      remove(this.#withoutPointsComponent);
+      this.#withoutPointsComponent = null;
+    }
+
+    if (this.#isLoading) {
+      this.#renderWithoutPointsView({isLoading: true});
+      return;
+    }
+
+    if (this.#isLoadingError) {
+      this.#renderWithoutPointsView({isLoadingError: true});
+      return;
+    }
+
     if (this.points.length === 0) {
-      render(this.#withoutPointsComponent, this.#container);
+      this.#renderWithoutPointsView();
       return;
     }
 
@@ -128,6 +149,16 @@ export default class BoardPresenter{
     this.#pointPresenters.set(point.id, pointPresenter);
   };
 
+  #renderWithoutPointsView = ({isLoading = false, isLoadingError = false} = {}) => {
+    this.#withoutPointsComponent = new WithoutPointsView({
+      filterType: this.#filterType,
+      isLoading,
+      isLoadingError
+    });
+
+    render(this.#withoutPointsComponent, this.#container, RenderPosition.AFTERBEGIN);
+  };
+
   #userActionHandler = (actionType, updateType, update) =>{
     switch(actionType){
       case UserAction.UPDATE_POINT:
@@ -168,6 +199,11 @@ export default class BoardPresenter{
         break;
       case UpdateType.MAJOR:
         this.#clearPoints({resetSortType: true});
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoadingError = data.isError;
+        this.#isLoading = false;
         this.#renderBoard();
         break;
     }
