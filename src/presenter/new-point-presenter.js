@@ -22,9 +22,8 @@ export default class NewPointPresenter {
       return;
     }
     this.#editFormComponent = new FormEditView({
-      pointDestination: this.#destinationsModel.getDestination(),
-      pointOffers: this.#offersModel.getOffers(),
-      isCreating: true,
+      pointDestination: this.#destinationsModel.destinations,
+      pointOffers: this.#offersModel.offers,
       onRollUpClick: this.#cancelClickHandler,
       onSubmitClick: this.#formSubmitHandler,
       onResetClick: this.#cancelClickHandler

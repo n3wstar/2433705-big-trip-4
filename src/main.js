@@ -8,6 +8,7 @@ import PointsModel from './model/points-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import FiltersModel from './model/filter-model.js';
 import PointsApiService from './service/points-api-service.js';
+import NewPointButtonView from './view/new-point-view.js';
 
 
 const bodyElement = document.querySelector('body');

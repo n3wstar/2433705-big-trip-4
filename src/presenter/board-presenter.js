@@ -7,8 +7,9 @@ import PointPresenter from './point-presenter.js';
 import { SortType } from '../const.js';
 import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
 import { UpdateType, UserAction } from '../const.js';
-import { FilterOptions } from '../const.js';
+import { FilterOptions, FilterTypes } from '../const.js';
 import { RenderPosition } from '../render.js';
+import NewPointPresenter from './new-point-presenter.js';
 
 
 export default class BoardPresenter{
@@ -23,7 +24,7 @@ export default class BoardPresenter{
   #newPointPresenter = null;
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
-  #filterType = FilterOptions.EVERYTHING;
+  #filterType = FilterTypes.EVERYTHING;
 
   #isLoading = true;
   #isLoadingError = false;

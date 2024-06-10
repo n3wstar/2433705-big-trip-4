@@ -1,11 +1,10 @@
-
 import { TYPES } from '../const.js';
 import { formatStringToDateTime } from '../utils.js';
 
-function createPointTypesListElement(currentType, id) {
+function createPointTypesListElement(currentType, id, isDisabled) {
   return TYPES.map((type) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
+      <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}${isDisabled ? 'disabled' : ''}>
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}">${type}</label>
     </div>`).join('');
 }
@@ -69,7 +68,7 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers}){
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-              ${createPointTypesListElement(type, id)}
+              ${createPointTypesListElement(type, id, isDisabled)}
           </fieldset>
         </div>
       </div>
