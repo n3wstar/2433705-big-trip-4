@@ -108,7 +108,6 @@ export default class BoardPresenter{
   #clearPoints = ({resetSortType = false} = {}) => {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
-    remove(this.#sortComponent);
 
     if (this.#withoutPointsComponent) {
       remove(this.#withoutPointsComponent);
