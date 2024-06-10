@@ -30,7 +30,7 @@ export default class FormEditView extends AbstractStatefulView {
   get template() {
     return CreateFormEditMarkup({
       state: this._state,
-      pointDestination: this.#pointDestination[0],
+      pointDestination: this.#pointDestination,
       pointOffers: this.#pointOffers
     });
   }
@@ -47,15 +47,16 @@ export default class FormEditView extends AbstractStatefulView {
   }
 
   #setDatePickers = () => {
+    const id = this.#point.id;
     this.#pickDateFrom = new DatePicker({
-      dateItem: this.element.querySelector('#event-start-time-1'),
+      dateItem: this.element.querySelector(`#event-start-time-${id}`),
       defaultDate: this._state.dateFrom,
       maxDate: this._state.dateTo,
       onClose: this.#dateFromCloseHandler,
     });
 
     this.#pickDateTo = new DatePicker({
-      dateItem: this.element.querySelector('#event-end-time-1'),
+      dateItem: this.element.querySelector(`#event-end-time-${id}`),
       defaultDate: this._state.dateTo,
       minDate: this._state.dateFrom,
       onClose: this.#dateToCloseHandler,

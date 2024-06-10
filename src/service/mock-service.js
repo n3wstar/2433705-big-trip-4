@@ -56,6 +56,18 @@ export default class MockService{
   getPoints(){
     return this.#points;
   }
+
+  updatePoint(updatedPoint){
+    return updatedPoint;
+  }
+
+  addPoint(addedPoint){
+    return {...addedPoint};
+  }
+
+  deletePoint(){
+
+  }
 }
 
 
