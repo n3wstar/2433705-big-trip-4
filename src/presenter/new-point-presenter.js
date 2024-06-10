@@ -25,9 +25,9 @@ export default class NewPointPresenter {
       pointDestination: this.#destinationsModel.getDestination(),
       pointOffers: this.#offersModel.getOffers(),
       isCreating: true,
-      onRollUpPointClick: this.#cancelClickHandler,
-      onFormSubmit: this.#formSubmitHandler,
-      onCancelFormClick: this.#cancelClickHandler
+      onRollUpClick: this.#cancelClickHandler,
+      onSubmitClick: this.#formSubmitHandler,
+      onResetClick: this.#cancelClickHandler
     });
     render(this.#editFormComponent, this.#container.element, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -46,7 +46,7 @@ export default class NewPointPresenter {
 
   #formSubmitHandler = (point) => {
     this.#handleDataChange(
-      UserAction.ADD_POINT,
+      UserAction.CREATE_POINT,
       UpdateType.MINOR,
       point
     );
