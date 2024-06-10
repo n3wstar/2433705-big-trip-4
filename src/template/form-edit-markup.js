@@ -13,11 +13,11 @@ function createPointDestinationListElement(destinations) {
   return ( `${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')} `);
 }
 
-function createOffersTemplate(offers, selectedOffers, isDisabled) {
+function createOffersTemplate(offers, selectedOffers) {
   const offerItems = offers.offers.map((offer) => {
     const offerName = offer.title.replace(' ', '').toLowerCase();
     return (`<div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${selectedOffers?.offers?.map((of) => of.id).includes(offer.id) ? 'checked' : ''} ${isDisabled ? '' : 'disabled'}>
+                <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${selectedOffers?.offers?.map((of) => of.id).includes(offer.id) ? 'checked' : ''}>
                 <label class="event__offer-label" for="${offer.id}">
                     <span class="event__offer-title">${offer.title}</span>
                     &plus;&euro;&nbsp;
@@ -107,7 +107,7 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers}){
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
-              ${createOffersTemplate(currentOffers, offers, isDisabled)}
+              ${createOffersTemplate(currentOffers, offers)}
             </div>
           </section>
 
