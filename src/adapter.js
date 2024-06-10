@@ -23,7 +23,7 @@ function adaptToServer(point) {
     ['is_favorite']: point.isFavorite
   };
 
-  delete adaptedPoint.price;
+  delete adaptedPoint.basePrice;
   delete adaptedPoint.dateFrom;
   delete adaptedPoint.dateTo;
   delete adaptedPoint.isFavorite;
