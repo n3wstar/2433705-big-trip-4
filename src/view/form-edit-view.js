@@ -12,8 +12,9 @@ export default class FormEditView extends AbstractStatefulView {
   #onRollUpClick = null;
   #pickDateFrom = null;
   #pickDateTo = null;
+  #resetButtonLabel = null;
 
-  constructor({point = EMPTY_POINT, pointDestination, pointOffers, onResetClick, onSubmitClick, onRollUpClick }){
+  constructor({point = EMPTY_POINT, pointDestination, pointOffers, onResetClick, onSubmitClick, onRollUpClick, resetButtonLabel }){
     super();
     this.#point = point;
     this.#pointDestination = pointDestination;
@@ -21,6 +22,7 @@ export default class FormEditView extends AbstractStatefulView {
     this.#onResetClick = onResetClick;
     this.#onSubmitClick = onSubmitClick;
     this.#onRollUpClick = onRollUpClick;
+    this.#resetButtonLabel = resetButtonLabel;
 
     this._setState(FormEditView.parsePointToState({point}));
     this._restoreHandlers();
@@ -31,7 +33,8 @@ export default class FormEditView extends AbstractStatefulView {
     return CreateFormEditMarkup({
       state: this._state,
       pointDestination: this.#pointDestination,
-      pointOffers: this.#pointOffers
+      pointOffers: this.#pointOffers,
+      resetButtonLabel: this.#resetButtonLabel
     });
   }
 

@@ -1,23 +1,24 @@
 import { TYPES } from '../const.js';
 import { formatStringToDateTime } from '../utils.js';
 
-function createPointTypesListElement(currentType, id, isDisabled) {
+function createPointTypesListElement(currentType, id) {
   return TYPES.map((type) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}${isDisabled ? 'disabled' : ''}>
+      <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}">${type}</label>
     </div>`).join('');
 }
 
-function createPointDestinationListElement(destinations) {
-  return ( `${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')} `);
+function createPointDestinationListElement(destinations, selectedDestinationName) {
+  const options = destinations.map((destination) => `<option value="${destination.name}" ${destination.name === selectedDestinationName ? 'selected' : ''}>${destination.name}</option>`).join('');
+  return `<select class="event__input event__input--destination" name="event-destination">${options}</select>`;
 }
 
-function createOffersTemplate(offers, selectedOffers, isDisabled) {
+function createOffersTemplate(offers, selectedOffers) {
   const offerItems = offers.offers.map((offer) => {
     const offerName = offer.title.replace(' ', '').toLowerCase();
     return (`<div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${selectedOffers?.offers?.map((of) => of.id).includes(offer.id) ? 'checked' : ''} ${isDisabled ? '' : 'disabled'}>
+                <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${selectedOffers?.offers?.map((of) => of.id).includes(offer.id) ? 'checked' : ''}>
                 <label class="event__offer-label" for="${offer.id}">
                     <span class="event__offer-title">${offer.title}</span>
                     &plus;&euro;&nbsp;
@@ -48,11 +49,11 @@ function createDestinationTemplate( destination ) {
   </section>` : '';
 }
 
-function CreateFormEditMarkup({state, pointDestination, pointOffers}){
-  const { point, isDisabled } = state;
-  const {id, basePrice, dateFrom, dateTo, offers, type} = point;
+function CreateFormEditMarkup({state, pointDestination, pointOffers, resetButtonLabel}){
+  const { point } = state;
+  const { id, basePrice, dateFrom, dateTo, offers, type, destination } = point;
   const currentOffers = pointOffers.find((offer) => offer.type === type);
-  const currentDestination = pointDestination.find((destination) => destination.id === point.destination);
+  const currentDestination = pointDestination.find((dest) => dest.id === destination);
   const destinationName = (currentDestination) ? currentDestination.name : '';
 
   return `<li class="trip-events__item">
@@ -68,7 +69,7 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers}){
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-              ${createPointTypesListElement(type, id, isDisabled)}
+              ${createPointTypesListElement(type, id)}
           </fieldset>
         </div>
       </div>
@@ -77,10 +78,7 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers}){
         <label class="event__label  event__type-output" for="event-destination-${id}">
         ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destinationName}" list="destination-list-${id}${isDisabled ? 'disabled' : ''}>
-        <datalist id="destination-list-${id}"/>
-        ${createPointDestinationListElement(pointDestination)}
-          </datalist>
+        ${createPointDestinationListElement(pointDestination, destinationName)}
       </div>
 
       <div class="event__field-group  event__field-group--time">
@@ -100,14 +98,14 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers}){
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
+      <button class="event__reset-btn" type="reset">${resetButtonLabel}</button>
       <button class="event__rollup-btn" type="button">
         </header>
         <section class="event__details">
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
-              ${createOffersTemplate(currentOffers, offers, isDisabled)}
+              ${createOffersTemplate(currentOffers, offers)}
             </div>
           </section>
 
@@ -119,4 +117,4 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers}){
     </li>`;
 }
 
-export{CreateFormEditMarkup};
+export { CreateFormEditMarkup };

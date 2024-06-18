@@ -49,11 +49,11 @@ function sortByTime(firstPoint, secondPoint) {
   const timeFrom = dayjs(firstPoint.dateTo).diff(dayjs(firstPoint.dateFrom));
   const timeTo = dayjs(secondPoint.dateTo).diff(dayjs(secondPoint.dateFrom));
 
-  return timeFrom - timeTo;
+  return timeTo - timeFrom;
 }
 
 function sortByPrice(firstPoint, secondPoint) {
-  return firstPoint.basePrice - secondPoint.basePrice;
+  return secondPoint.basePrice - firstPoint.basePrice;
 }
 
 function sortByDay(firstPoint, secondPoint) {
