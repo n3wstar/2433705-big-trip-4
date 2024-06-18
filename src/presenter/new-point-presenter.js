@@ -21,6 +21,8 @@ export default class NewPointPresenter {
     if (this.#editFormComponent !== null) {
       return;
     }
+
+
     this.#editFormComponent = new FormEditView({
       pointDestination: this.#destinationsModel.destinations,
       pointOffers: this.#offersModel.offers,

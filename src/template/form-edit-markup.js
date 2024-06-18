@@ -10,21 +10,29 @@ function createPointTypesListElement(currentType, id) {
 }
 
 function createPointDestinationListElement(destinations, selectedDestinationName) {
-  const options = destinations.map((destination) => `<option value="${destination.name}" ${destination.name === selectedDestinationName ? 'selected' : ''}>${destination.name}</option>`).join('');
-  return `<select class="event__input event__input--destination" name="event-destination">${options}</select>`;
+  const options = destinations.map((destination) =>
+    `<option value="${destination.name}" ${destination.name === selectedDestinationName ? 'selected' : ''}>${destination.name}</option>`
+  ).join('');
+
+  return `<select class="event__input event__input--destination" name="event-destination">
+    ${options}
+  </select>`;
 }
 
-function createOffersTemplate(offers, selectedOffers) {
-  const offerItems = offers.offers.map((offer) => {
+function createOffersTemplate(currentOffers, selectedOfferIds) {
+  const offerItems = currentOffers.map((offer) => {
+    const isChecked = selectedOfferIds.includes(offer.id);
     const offerName = offer.title.replace(' ', '').toLowerCase();
-    return (`<div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${selectedOffers?.offers?.map((of) => of.id).includes(offer.id) ? 'checked' : ''}>
-                <label class="event__offer-label" for="${offer.id}">
-                    <span class="event__offer-title">${offer.title}</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">${offer.price}</span>
-                </label>
-            </div>`);
+    return (
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerName}" ${isChecked ? 'checked' : ''}>
+        <label class="event__offer-label" for="${offer.id}">
+          <span class="event__offer-title">${offer.title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+        </label>
+      </div>`
+    );
   }).join('');
 
   return `<div class="event__available-offers">${offerItems}</div>`;
@@ -53,8 +61,8 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers, resetButton
   const { point } = state;
   const { id, basePrice, dateFrom, dateTo, offers, type, destination } = point;
   const currentOffers = pointOffers.find((offer) => offer.type === type);
-  const currentDestination = pointDestination.find((dest) => dest.id === destination);
-  const destinationName = (currentDestination) ? currentDestination.name : '';
+  const currentDestination = destination ? pointDestination.find((dest) => dest.id === destination) : null;
+  const destinationName = currentDestination ? currentDestination.name : '';
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -105,7 +113,7 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers, resetButton
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
-              ${createOffersTemplate(currentOffers, offers)}
+              ${createOffersTemplate(currentOffers.offers, offers)}
             </div>
           </section>
 
