@@ -1,5 +1,6 @@
 import { TYPES } from '../const.js';
-import { formatStringToDateTime } from '../utils.js';
+import { formatStringToISODateTime } from '../utils.js';
+
 
 function createPointTypesListElement(currentType, id) {
   return TYPES.map((type) =>
@@ -91,10 +92,10 @@ function CreateFormEditMarkup({state, pointDestination, pointOffers, resetButton
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-${id}">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${formatStringToDateTime(dateFrom)}">
+        <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${formatStringToISODateTime(dateFrom)}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-${id}">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${formatStringToDateTime(dateTo)}">
+        <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${formatStringToISODateTime(dateTo)}">
       </div>
 
       <div class="event__field-group  event__field-group--price">

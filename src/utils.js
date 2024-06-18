@@ -13,6 +13,13 @@ function getRandomValue(items){
 
 }
 
+function formatStringToISODateTime(dateTime) {
+  if (!dateTime) {
+    return '';
+  }
+  return dateTime.toISOString();
+}
+
 
 function formatStringToDateTime(dateTime){
   return dayjs(dateTime).format('DD/MM/YY HH:mm');
@@ -75,6 +82,6 @@ function isPointFuture(point) {
   return dayjs().isBefore(point.dateFrom);
 }
 
-export {getRandomNumber, getRandomValue, formatStringToDateTime, formatStringToShortDate,
+export {getRandomNumber, getRandomValue, formatStringToDateTime, formatStringToShortDate, formatStringToISODateTime,
   formatStringToTime, getDuration, updateItem, sortByDay, sortByPrice, sortByTime, isPointFuture, isPointPast, isPointPresent, isBigDifference
 };
