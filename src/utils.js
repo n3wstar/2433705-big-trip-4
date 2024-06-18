@@ -13,6 +13,13 @@ function getRandomValue(items){
 
 }
 
+function formatStringToISODateTime(dateTime) {
+  if (!dateTime) {
+    return '';
+  }
+  return dateTime.toISOString();
+}
+
 
 function formatStringToDateTime(dateTime){
   return dayjs(dateTime).format('DD/MM/YY HH:mm');
@@ -49,11 +56,11 @@ function sortByTime(firstPoint, secondPoint) {
   const timeFrom = dayjs(firstPoint.dateTo).diff(dayjs(firstPoint.dateFrom));
   const timeTo = dayjs(secondPoint.dateTo).diff(dayjs(secondPoint.dateFrom));
 
-  return timeFrom - timeTo;
+  return timeTo - timeFrom;
 }
 
 function sortByPrice(firstPoint, secondPoint) {
-  return firstPoint.basePrice - secondPoint.basePrice;
+  return secondPoint.basePrice - firstPoint.basePrice;
 }
 
 function sortByDay(firstPoint, secondPoint) {
@@ -75,6 +82,6 @@ function isPointFuture(point) {
   return dayjs().isBefore(point.dateFrom);
 }
 
-export {getRandomNumber, getRandomValue, formatStringToDateTime, formatStringToShortDate,
+export {getRandomNumber, getRandomValue, formatStringToDateTime, formatStringToShortDate, formatStringToISODateTime,
   formatStringToTime, getDuration, updateItem, sortByDay, sortByPrice, sortByTime, isPointFuture, isPointPast, isPointPresent, isBigDifference
 };

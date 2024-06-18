@@ -21,12 +21,15 @@ export default class NewPointPresenter {
     if (this.#editFormComponent !== null) {
       return;
     }
+
+
     this.#editFormComponent = new FormEditView({
       pointDestination: this.#destinationsModel.destinations,
       pointOffers: this.#offersModel.offers,
       onRollUpClick: this.#cancelClickHandler,
       onSubmitClick: this.#formSubmitHandler,
-      onResetClick: this.#cancelClickHandler
+      onResetClick: this.#cancelClickHandler,
+      resetButtonLabel: 'Cancel'
     });
     render(this.#editFormComponent, this.#container.element, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);

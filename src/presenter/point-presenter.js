@@ -44,7 +44,8 @@ export default class PointPresenter {
       pointOffers: this.#offersModel.offers,
       onResetClick: this.#resetClickHandler,
       onSubmitClick: this.#pointSubmitHandler,
-      onRollUpClick: this.#rollUpClickHandler
+      onRollUpClick: this.#rollUpClickHandler,
+      resetButtonLabel: 'Delete'
     });
     if (prevPointComponent === null || prevpointEditComponent === null){
       render(this.#pointComponent, this.#eventListContainer);
@@ -119,6 +120,7 @@ export default class PointPresenter {
   };
 
   #rollUpClickHandler = () => {
+    this.#pointEditComponent.reset(this.#point);
     this.#replaceFormToPoint();
     document.addEventListener('keydown', this.#escKeydownHandler);
   };

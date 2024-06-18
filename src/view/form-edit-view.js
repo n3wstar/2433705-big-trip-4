@@ -12,8 +12,9 @@ export default class FormEditView extends AbstractStatefulView {
   #onRollUpClick = null;
   #pickDateFrom = null;
   #pickDateTo = null;
+  #resetButtonLabel = null;
 
-  constructor({point = EMPTY_POINT, pointDestination, pointOffers, onResetClick, onSubmitClick, onRollUpClick }){
+  constructor({ point = EMPTY_POINT, pointDestination, pointOffers, onResetClick, onSubmitClick, onRollUpClick, resetButtonLabel }) {
     super();
     this.#point = point;
     this.#pointDestination = pointDestination;
@@ -21,21 +22,26 @@ export default class FormEditView extends AbstractStatefulView {
     this.#onResetClick = onResetClick;
     this.#onSubmitClick = onSubmitClick;
     this.#onRollUpClick = onRollUpClick;
+    this.#resetButtonLabel = resetButtonLabel;
 
-    this._setState(FormEditView.parsePointToState({point}));
+    if (!this.#point.destination) {
+      this.#point.destination = null;
+    }
+
+    this._setState(FormEditView.parsePointToState({ point }));
     this._restoreHandlers();
-
   }
 
   get template() {
     return CreateFormEditMarkup({
       state: this._state,
       pointDestination: this.#pointDestination,
-      pointOffers: this.#pointOffers
+      pointOffers: this.#pointOffers,
+      resetButtonLabel: this.#resetButtonLabel
     });
   }
 
-  _restoreHandlers(){
+  _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpClickHandler);
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#resetButtonClickHandler);
@@ -48,35 +54,42 @@ export default class FormEditView extends AbstractStatefulView {
 
   #setDatePickers = () => {
     const id = this.#point.id;
+
     this.#pickDateFrom = new DatePicker({
       dateItem: this.element.querySelector(`#event-start-time-${id}`),
-      defaultDate: this._state.dateFrom,
-      maxDate: this._state.dateTo,
+      defaultDate: this._state.point.dateFrom,
+      maxDate: this._state.point.dateTo,
       onClose: this.#dateFromCloseHandler,
     });
 
     this.#pickDateTo = new DatePicker({
       dateItem: this.element.querySelector(`#event-end-time-${id}`),
-      defaultDate: this._state.dateTo,
-      minDate: this._state.dateFrom,
+      defaultDate: this._state.point.dateTo,
+      minDate: this._state.point.dateFrom,
       onClose: this.#dateToCloseHandler,
     });
   };
 
   #dateFromCloseHandler = ([userDate]) => {
     this._setState({
-      dateFrom: userDate
+      point: {
+        ...this._state.point,
+        dateFrom: userDate,
+      }
     });
 
-    this.#pickDateTo.setMinDate(this._state.dateFrom);
+    this.#pickDateTo.setMinDate(userDate);
   };
 
   #dateToCloseHandler = ([userDate]) => {
     this._setState({
-      dateTo: userDate
+      point: {
+        ...this._state.point,
+        dateTo: userDate,
+      }
     });
 
-    this.#pickDateFrom.setMaxDate(this._state.dateTo);
+    this.#pickDateFrom.setMaxDate(userDate);
   };
 
   removeElement = () => {
@@ -130,19 +143,21 @@ export default class FormEditView extends AbstractStatefulView {
   };
 
   #changeOffersHandler = () => {
-    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    const checkedOfferIds = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked')).map((offer) => offer.id);
     this._setState({
       ...this._state,
-      offers: checkedOffers.map((offer) => offer.id)
+      point: {
+        ...this._state.point,
+        offers: checkedOfferIds
+      }
     });
   };
 
-  static parsePointToState = ({point}) => ({ point});
-
+  static parsePointToState = ({ point }) => ({ point });
 
   static parseStateToPoint = (state) => state.point;
 
-  reset = (point) => this.updateElement({point});
+  reset = (point) => this.updateElement({ point });
 
   #resetButtonClickHandler = (evt) => {
     evt.preventDefault();

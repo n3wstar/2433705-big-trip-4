@@ -1,5 +1,6 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import dayjs from 'dayjs';
 
 export default class DatePicker {
   constructor({
@@ -11,6 +12,7 @@ export default class DatePicker {
   })
 
   {
+    const parsedDate = defaultDate && dayjs(defaultDate).toDate();
     this.datePicker = flatpickr(dateItem,
       {
         dateFormat: 'd/m/y H:i',
@@ -19,7 +21,7 @@ export default class DatePicker {
           firstDayOfWeek: 1,
         },
         'time_24hr': true,
-        defaultDate,
+        defaultDate: parsedDate,
         minDate,
         maxDate,
         onClose,
