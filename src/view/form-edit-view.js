@@ -130,6 +130,7 @@ export default class FormEditView extends AbstractStatefulView {
     }
   };
 
+
   #changePriceHandler = (evt) => {
     const basePrice = evt.target.valueAsNumber;
     if (!isNaN(basePrice)) {
